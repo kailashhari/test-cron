@@ -1,0 +1,29 @@
+name: Water Reminder
+
+on:
+  schedule:
+    - cron: '30 3,5,7,9,11,13 * * *' # Runs at 09:00, 11:00, 13:00, 15:00, 17:00, and 19:00 IST daily.
+
+jobs:
+  send-notification:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip && pip install -r requirements.txt
+
+      - name: Send water reminder
+        run: python send_water_reminder.py
+        env:
+          PUSHOVER_USER_KEY: ${{ secrets.PUSHOVER_USER_KEY }}
+          PUSHOVER_API_TOKEN: ${{ secrets.PUSHOVER_API_TOKEN }}
+          PUSHOVER_MESSAGE: "Time to drink water! Stay hydrated."
+          PUSHOVER_TITLE: "Water Reminder"
